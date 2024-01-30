@@ -21,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo "Errore " . $conn->error;
         }
     }else{
-        
         header("Location: login.php");
         exit;
     }

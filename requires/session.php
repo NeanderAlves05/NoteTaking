@@ -12,6 +12,7 @@ function login($email){
 function logout(){
 	$_SESSION=[];
 	session_destroy();
+	header("Location: login.php");
 }
 //funzione per fare il login
 function doLogin($logged_in){
