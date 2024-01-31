@@ -4,6 +4,8 @@ include '../requires/connection.php';
 
 $msg='';
 if($logged_in){
+	$sql = "SELECT id FROM users WHERE email LIKE '$email'";
+	$result=$conn->query($sql);
     $_SESSION['email']=$email;
 	header("Location: index.php");
 	exit;
@@ -11,7 +13,6 @@ if($logged_in){
 if($_SERVER['REQUEST_METHOD']=== 'POST'){
 	$email=strtolower($_POST['email']);
     $password = md5($_POST['password']);
-
     $sql = "SELECT email,password FROM users WHERE email LIKE '$email' AND password LIKE'$password'";
 	$result=$conn->query($sql);
 	if($result->num_rows>0){

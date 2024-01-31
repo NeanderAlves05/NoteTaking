@@ -2,10 +2,14 @@
 include '../requires/session.php';
 doLogin($logged_in);
 include '../requires/connection.php';
-$_SESSION['modify']=0;
 $disable="disabled";
 $btnText="Modify";
-$change=0;
+$enable="?mod=true";
+
+if(isset($_GET['mod'])== true){
+	$disable="";
+	$enable="";
+}
 if(isset($_POST)){
 	$email=$_SESSION['email'];
 	$sql="SELECT nome,cognome,email FROM users WHERE email = '$email'";
@@ -16,7 +20,8 @@ if(isset($_POST)){
 		$cognome= $row['cognome'];
 		$email = $row['email'];
 	}
-}elseif(!empty($_POST)){
+}
+if(!empty($_POST)){
 	$nome = $_POST['nome'];
 	$cognome= $_POST['cognome'];
 	$email = $_POST['email'];
@@ -26,9 +31,6 @@ if(isset($_POST)){
 	if(!$risultato_query){
 		die("Errore nella query $query_insert".mysql_error());
 	}
-}
-if(isset($_GET)){
-	
 }
 ?>
 <!DOCTYPE html>
@@ -72,10 +74,10 @@ if(isset($_GET)){
       <div class="offcanvas-body">
         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
         <li class="nav-item">
-          <a class="nav-link active " aria-current="page" href="index.php">Home</a>
+          <a class="nav-link " aria-current="page" href="index.php">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="profile.php">Profile</a>
+          <a class="nav-link active" href="profile.php">Profile</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="logout.php">Logout</a>
@@ -84,7 +86,7 @@ if(isset($_GET)){
       </div>
       </div>
     </div>
-  </nav>
+</nav>
 	<hr class="featurette-divider">
 	<div class="conteiner">
 	    <!--PROFILE SHOW OFF-->
@@ -101,21 +103,19 @@ if(isset($_GET)){
 						</div>
 						<div class="row mt-2">
 							<div class="col-md-6"><label class="labels">Nome</label>
-							<input name="nome" type="text" class="form-control" value="<?php echo $nome;?>" required <?php echo $disable;?>></div>
-							<div class="col-md-6"><label class="labels">Cognome</label><input type="text" name="cognome" class="form-control" value="<?php echo $cognome;?>" required <?php echo $disable;?>></div>
+							<input name="nome" for="nome" type="text" class="form-control" value="<?php echo $nome;?>" required <?php echo $disable;?>></div>
+
+							<div class="col-md-6"><label class="labels">Cognome</label><input type="text" name="cognome" for="cognome" class="form-control" value="<?php echo $cognome;?>" required <?php echo $disable;?>></div>
 						</div>
 						<div class="row mt-3">
 							<div class="col-md-6"><label class="labels">Email</label><input name="email" type="email" class="form-control" value="<?php echo $email;?>" required <?php echo $disable;?>></div>
 							
 						</div>
-						<div class="row">
+						<div class="row-mt-2">
 							<div class="col-md-6 ">
-								<button class="btn btn-primary profile-button" type="submit" onclicK="changeState()"><?php echo $btnText;?>
-								</button>
-							</div>
-							<div class="col-md-6 ">
-									<button class="btn btn-primary profile-button" type="submit">Save</button>
-								</div>
+								<a class="btn btn-primary profile-button" href="profile.php<?php echo $enable;?>">Modify
+								</a>
+								<button class="btn btn-primary profile-button" type="submit">Save</button>
 							</div>
 						</div>
 					</div>
@@ -127,13 +127,7 @@ if(isset($_GET)){
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 	<script>
 		function changeState(){
-			$_SESSION['modify']=($change+1)%2;
-			if($_SESSION['modify']!=0){
-				$disable="disabled";
-				$btnText="Save";
-			}else{
-				$btnText="Modify";
-			}
+			header("Location: profile.php?mod=true");
 		}
 	</script>
 	
