@@ -2,6 +2,8 @@
 include '../requires/session.php';
 doLogin($logged_in);
 include '../requires/connection.php';
+include '../requires/cookie.php';
+
 $disable="disabled";
 $btnText="Modify";
 $enable="?mod=true";
@@ -10,17 +12,16 @@ if(isset($_GET['mod'])== true){
 	$disable="";
 	$enable="";
 }
-if(isset($_POST)){
-	$email=$_SESSION['email'];
-	$sql="SELECT nome,cognome,email FROM users WHERE email = '$email'";
-	$res=$conn->query($sql);
-	if ($res->num_rows > 0) {
-		$row = $res->fetch_assoc();
-		$nome = $row['nome'];
-		$cognome= $row['cognome'];
-		$email = $row['email'];
-	}
+$email=$_COOKIE['email'];
+$sql="SELECT nome,cognome,email FROM users WHERE email = '$email'";
+$res=$conn->query($sql);
+if ($res->num_rows > 0) {
+	$row = $res->fetch_assoc();
+	$nome = $row['nome'];
+	$cognome= $row['cognome'];
+	$email = $row['email'];
 }
+
 if(!empty($_POST)){
 	$nome = $_POST['nome'];
 	$cognome= $_POST['cognome'];
@@ -62,7 +63,7 @@ if(!empty($_POST)){
 <body>
 <nav class="navbar bg-body-tertiary ">
     <div class="container">
-      <a class="navbar-brand " href="profile.php"><strong>NoteTaking</strong></a>
+      <a class="navbar-brand " href="index.php"><strong>NoteTaking</strong></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
       </button>

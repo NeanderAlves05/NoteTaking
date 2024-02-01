@@ -1,6 +1,7 @@
 <?php
 include '../requires/session.php';
 include '../requires/connection.php';
+include '../requires/cookie.php';
 
 $msg='';
 if($logged_in){
@@ -18,6 +19,11 @@ if($_SERVER['REQUEST_METHOD']=== 'POST'){
 	if($result->num_rows>0){
 		login($email);
         $_SESSION['email']=$email;
+		$sql="SELECT id from users where email like '$email'";
+		$res=$conn->query($sql);
+		$row=$res->fetch_assoc();
+		$id_user=$row['id'];
+		$_SESSION['user_id']=$id_user;
 		header("Location:index.php");
 		exit;
 	}else{

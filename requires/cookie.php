@@ -1,12 +1,11 @@
 <?php
-if(!isset($_COOKIE["visits"])){
+if(isset($_COOKIE["email"])|| isset($_COOKIE["id"])){
     //posso utilizzare il cookie
-    $count=0;
-    setcookie("visits",$count,
+    $email=$_SESSION['email'];
+    setcookie("email",$email,
     time()+(86400*30),"/");
-}else{
-    $count=$_COOKIE["visits"]+1;
-    setcookie("visits",$count,
+    $user_id=$_SESSION['user_id'];
+    setcookie("id",$user_id,
     time()+(86400*30),"/");
 }
-echo $_COOKIE["visits"];
+echo $_COOKIE["email"];

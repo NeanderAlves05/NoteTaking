@@ -2,15 +2,22 @@
 include '../requires/session.php';
 doLogin($logged_in);
 include '../requires/connection.php';
-$email=$_SESSION['email'];
-$sql="SELECT id from users where email like '$email'";
-$res=$conn->query($sql);
-$row=$res->fetch_assoc();
-$id_user=$row['id'];
+include '../requires/cookie.php';
+
+$id_user=$_COOKIE["id"];
 $sql="SELECT count(*) FROM notes where id_user = '$id_user'";
 $res=$conn->query($sql);
 if ($res->num_rows !=0) {
   $n_notes=$res; //n sarà utilizzato per stampare le note sucessivamente
+}
+
+if($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['new_category']!=""){
+  $new_category=$_POST['new_category'];
+  $sql="INSERT INTO categories(descriz,id_user) VALUES ('$new_category','$id_user')";
+  $res=$conn->query($sql);
+  if(!$res){
+    echo("ERRORE");
+  }
 }
 ?>
 <!doctype html>
@@ -125,8 +132,39 @@ if ($res->num_rows !=0) {
           <div class="col-md-4">
               <a href="index.php?action=folder"class="btn btn-primary my-2">Create a folder</a>
           </div>
+          <!-- Button trigger modal -->
           <div class="col-md-4">
-              <a href="index.php?action=category"class="btn btn-primary my-2">Create a category</a>
+            <button type="button" class="btn btn-primary my-2" data-bs-toggle="modal" data-bs-target="#modalCategory">
+              Create a category
+            </button>
+          </div>
+          <!-- Modal -->
+          <div class="modal fade" id="modalCategory" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <form action="index.php" method="post">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="modalLabel">Create a new category</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                      <div class="col-md-6">
+                          <div class="form-group">
+                              <input id="new_category" type="text" name="new_category" class="form-control" placeholder="Category" required="required" data-error="Please specify a name" value="">
+                          </div>
+                      </div>
+                      <div class="col-md-6">
+                      </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+              </div>
+              </form>
+            </div>
           </div>
         </div>
 
@@ -142,8 +180,7 @@ if ($res->num_rows !=0) {
           $sql = "SELECT * FROM notes WHERE id_user like '$id_user'";
           $result = $conn->query($sql);
           if($result->num_rows>0){
-            $notes_array = $result->fetch_assoc();
-            foreach($notes_array as $note){
+            while($note = $result->fetch_assoc()) {
                 // Estrai i dati dalla riga risultato
                 $note_id= $note['id'];
                 $id_user = $note['id_user'];
@@ -164,7 +201,7 @@ if ($res->num_rows !=0) {
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="btn-group">
                         <a class="btn btn-sm btn-outline-secondary" href="note.php?nId=<?php echo $note_id?>">Edit</a>
-                        <a class="btn btn-sm btn-outline-secondary">Delete</a>
+                        <a class="btn btn-sm btn-outline-secondary" onClick="deleteNote($conn,$note_id)">Delete</a>
                       </div>
                       <small class="text-muted"></small>
                     </div>
@@ -187,3 +224,18 @@ if ($res->num_rows !=0) {
       
   </body>
 </html>
+
+<?php
+  function deleteNote($conn, $noteId) {
+    $deleteSql = "DELETE FROM notes WHERE id = $noteId";
+    $result = $conn->query($deleteSql);
+
+    if ($result) {
+        // La nota è stata eliminata con successo
+        return true;
+    } else {
+        // Errore durante l'eliminazione della nota
+        return false;
+    }
+}
+?>
