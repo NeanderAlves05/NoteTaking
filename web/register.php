@@ -1,5 +1,7 @@
 <?php
+include( '../requires/session.php');
 include '../requires/connection.php';
+include '../requires/cookie.php';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //recupero i dati dal form
     $nome=ucfirst(strtolower($_POST['nome']));
@@ -21,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo "Errore " . $conn->error;
         }
     }else{
+        login($email);
         header("Location: login.php");
         exit;
     }

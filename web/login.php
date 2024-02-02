@@ -1,12 +1,12 @@
 <?php
-include '../requires/session.php';
+include( '../requires/session.php');
 include '../requires/connection.php';
 include '../requires/cookie.php';
-
 $msg='';
 if($logged_in){
 	$sql = "SELECT id FROM users WHERE email LIKE '$email'";
 	$result=$conn->query($sql);
+	$_SESSION['user_id']=$result->fetch_assoc();
     $_SESSION['email']=$email;
 	header("Location: index.php");
 	exit;

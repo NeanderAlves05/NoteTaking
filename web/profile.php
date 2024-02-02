@@ -1,11 +1,10 @@
 <?php
-include '../requires/session.php';
-doLogin($logged_in);
+include( '../requires/session.php');
+require_login($logged_in);
 include '../requires/connection.php';
 include '../requires/cookie.php';
 
 $disable="disabled";
-$btnText="Modify";
 $enable="?mod=true";
 
 if(isset($_GET['mod'])== true){

@@ -1,14 +1,14 @@
 <?php
-include '../requires/session.php';
-doLogin($logged_in);
-include '../requires/connection.php';
+include( '../requires/session.php');
 include '../requires/cookie.php';
+require_login($logged_in);
+include '../requires/connection.php';
 
-$id_user=$_COOKIE["id"];
+$id_user=$_SESSION["user_id"];
 $sql="SELECT count(*) FROM notes where id_user = '$id_user'";
 $res=$conn->query($sql);
-if ($res->num_rows !=0) {
-  $n_notes=$res; //n sarà utilizzato per stampare le note sucessivamente
+if ($res->num_rows >0) {
+  $n_notes=$res->fetch_assoc(); //n sarà utilizzato per stampare le note sucessivamente
 }
 
 if($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['new_category']!=""){
@@ -19,6 +19,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['new_category']!=""){
     echo("ERRORE");
   }
 }
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -180,6 +181,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['new_category']!=""){
           $sql = "SELECT * FROM notes WHERE id_user like '$id_user'";
           $result = $conn->query($sql);
           if($result->num_rows>0){
+            $i=0;
             while($note = $result->fetch_assoc()) {
                 // Estrai i dati dalla riga risultato
                 $note_id= $note['id'];
@@ -201,14 +203,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['new_category']!=""){
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="btn-group">
                         <a class="btn btn-sm btn-outline-secondary" href="note.php?nId=<?php echo $note_id?>">Edit</a>
-                        <a class="btn btn-sm btn-outline-secondary" onClick="deleteNote($conn,$note_id)">Delete</a>
+                        <a href="delete_note.php?nId=<?php echo $note_id?>" class="btn btn-sm btn-outline-secondary" >Delete</a>
                       </div>
                       <small class="text-muted"></small>
                     </div>
                   </div>
                 </div>
               </div>
-            <?php      
+            <?php 
+                 
               }
             }
             ?>
@@ -224,18 +227,3 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['new_category']!=""){
       
   </body>
 </html>
-
-<?php
-  function deleteNote($conn, $noteId) {
-    $deleteSql = "DELETE FROM notes WHERE id = $noteId";
-    $result = $conn->query($deleteSql);
-
-    if ($result) {
-        // La nota è stata eliminata con successo
-        return true;
-    } else {
-        // Errore durante l'eliminazione della nota
-        return false;
-    }
-}
-?>
