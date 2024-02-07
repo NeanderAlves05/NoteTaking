@@ -172,7 +172,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['new_category']!=""){
       </div>
     </div>
   </section>
-
+  <hr class="featurette-divider">
   <div class="album py-5 bg-light">
     <div class="container">
     <strong>Note List</strong>
@@ -190,16 +190,23 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['new_category']!=""){
                 $title = $note['title'];
                 $content = $note['content'];
                 $last_update = $note['last_update'];
-                // Puoi anche eseguire una seconda query per ottenere la categoria
-                $category_sql = "SELECT descriz FROM categories WHERE id = $id_category";
-                $category_result = $conn->query($category_sql);
-                $category_row = $category_result->fetch_assoc();
-                $category = $category_row['descriz'];
+                if($id_category != 7){
+                  // Puoi anche eseguire una seconda query per ottenere la categoria
+                  $category_sql = "SELECT descriz FROM categories WHERE id = $id_category";
+                  $category_result = $conn->query($category_sql);
+                  $category_row = $category_result->fetch_assoc();
+                  $category = $category_row['descriz'];
+                }else{
+                  $category= "";
+                }
+                
+                
             ?>
               <div class="col">
                 <div class="card shadow-sm">
                   <div class="card-body">
-                    <p class="card-title"><?php echo $title?></p>
+                    <p class="card-title"><strong><?php echo $title?></strong> - <?php echo $category?></p>
+                    <p class="card-body"><?php echo $content?></p>
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="btn-group">
                         <a class="btn btn-sm btn-outline-secondary" href="note.php?nId=<?php echo $note_id?>">Edit</a>

@@ -8,15 +8,15 @@ $titolo="";
 $content="";
 $category="-";
 $folder="-";
-$note_id=0;
 if(isset($_GET['nId'])){
     $note_id=$_GET['nId'];
-    $isnew='false';
+    $isnew=false;
     $sql = "SELECT * FROM notes WHERE notes.id like '$note_id'";
     $result = $conn->query($sql);
     if($result->num_rows>0){
         // Estrai i dati dalla riga risultato
         $note=$result->fetch_assoc();
+        $note_id = $note['id'];
         $id_user = $note['id_user'];
         $id_category = $note['id_category'];
         $titolo = $note['title'];
@@ -28,8 +28,9 @@ if(isset($_GET['nId'])){
         $category_row = $category_result->fetch_assoc();
         $category = $category_row['descriz'];    
     }
+}else{
+    $isnew=true;
 }
-echo $isnew;
 //inserisco i dati nel database
 if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
     //recupero i dati dal form
@@ -38,29 +39,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id_category=$_POST['category'];
     $id_folder=$_POST['folder'];
     if($id_category=="-"){
-        $id_category=NULL;
+        $id_category=7; //uncategorized
     }
     if($id_folder=="-"){
-        $folder=NULL;
+        $folder=3; //default folder
     }
-    if($isnew == 'false'){
+    if(!$isnew){
         // Codice per l'aggiornamento di una nota esistente
-        $query_update = "UPDATE notes 
-        SET title = '$titolo', content = '$content', id_category = '$id_category', last_update = NOW() 
+        $query_update = " UPDATE notes 
+        SET title = '$titolo',
+            content = '$content',
+            id_category = '$id_category',
+            last_update = NOW()
         WHERE notes.id = '$note_id'";
         $result_update = $conn->query($query_update);
-
         if ($result_update) {
-        // Ora eseguiamo la query di aggiornamento nella tabella note_folder
-        $sql_folder = "UPDATE note_folder SET id_folder = '$id_folder' 
-        WHERE id_note = '$note_id'";
-        $result_folder = $conn->query($sql_folder);
-
-        if ($result_folder) {
-        echo "Nota aggiornata con successo";
-        } else {
-        die("Errore nell'aggiornamento della tabella note_folder: " . $conn->error);
-        }
+            // Ora eseguiamo la query di aggiornamento nella tabella note_folder
+            $sql_folder = "UPDATE note_folder SET id_folder = '$id_folder' 
+            WHERE id_note = '$note_id'";
+            $result_folder = $conn->query($sql_folder);
+            if ($result_folder) {
+            echo "Nota aggiornata con successo";
+            } else {
+            die("Errore nell'aggiornamento della tabella note_folder: " . $conn->error);
+            }
         } else {
         die("Errore nell'aggiornamento della tabella notes: " . $conn->error);
         }
@@ -156,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="card-body bg-light">
             <div class = "container">
 
-            <form action="note.php" method="post">
+            <form action="note.php?nId=<?php echo $note_id?>" method="post">
             <div class="controls">
                 <div class="row">
                     <div class="col-md-6">
